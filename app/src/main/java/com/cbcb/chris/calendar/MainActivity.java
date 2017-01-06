@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         mainListView = (ListView) findViewById( R.id.list_view_main );
 
         // Create and populate a List of planet names.
-        String[] planets = new String[] { "Mercury", "Venus", "Earth", "Mars",
+        String[] planets = new String[] { "This is an update", "Venus", "Earth", "Mars",
                 "Jupiter", "Saturn", "Uranus", "Neptune"};
         ArrayList<String> planetList = new ArrayList<String>();
         planetList.addAll( Arrays.asList(planets) );
