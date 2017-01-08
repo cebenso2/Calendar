@@ -1,7 +1,16 @@
 package com.cbcb.chris.calendar;
 //master
+import android.annotation.TargetApi;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.app.RemoteInput;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,12 +26,14 @@ import android.widget.TimePicker;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ListView mainListView ;
     private ArrayAdapter<String> listAdapter ;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,35 +41,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        showEvents();
 
-        DataBaseHelper db = new DataBaseHelper(this);
-
-// Inserting Shop/Rows
-        //Log.d("Insert: ", "Inserting ..");
-
-        //db.addEvent(new Event(1,"Sam Test", new Time(3,3,5)));
-        /*db.addShop(new Shop(2,"Dunkin Donuts", "White Plains, NY 10601"));
-        db.addShop(new Shop(3,"Pizza Porlar", "North West Avenue, Boston , USA"));
-        db.addShop(new Shop(4,"Town Bakers", "Beverly Hills, CA 90210, USA"));
-*/
-// Reading all shops
-        Log.d("Reading: ", "Reading all events..");
-        List<Event> events = db.getAllEvents();
-        ArrayList<String> eventList = new ArrayList<String>();
-        for (Event event : events) {
-            String log = "Id: " + event.getId() + " ,Name: " + event.getName() + " ,Time: " + event.getTime().toString();
-// Writing shops to log
-            Log.d("Event: : ", log);
-            eventList.add(event.getName());
-            //db.deleteEvent(event);
-        }
-        listAdapter = new ArrayAdapter<String>(this, R.layout.simple_row, eventList);
-
-
-        mainListView = (ListView) findViewById( R.id.list_view_main );
-        mainListView.setAdapter( listAdapter );
-        db.close();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -84,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRestart(){
         super.onRestart();
+        showEvents();
+    }
+    /** Called when the user clicks the Send button */
+    public void addEvent(View view) {
+        Intent intent = new Intent(this, EventActivity.class);
+        startActivity(intent);
+    }
+    private void showEvents(){
         DataBaseHelper db = new DataBaseHelper(this);
         Log.d("Reading: ", "Reading all events..");
         List<Event> events = db.getAllEvents();
@@ -96,12 +89,8 @@ public class MainActivity extends AppCompatActivity {
         listAdapter = new ArrayAdapter<String>(this, R.layout.simple_row, eventList);
         mainListView = (ListView) findViewById( R.id.list_view_main );
         mainListView.setAdapter( listAdapter );
-        db.close(); 
+        db.close();
     }
-    /** Called when the user clicks the Send button */
-    public void addEvent(View view) {
-        Intent intent = new Intent(this, EventActivity.class);
-        startActivity(intent);
-    }
+
 
 }
