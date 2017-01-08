@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         listAdapter = new ArrayAdapter<String>(this, R.layout.simple_row, eventList);
         mainListView = (ListView) findViewById( R.id.list_view_main );
         mainListView.setAdapter( listAdapter );
-        db.close();
+        db.close(); 
     }
     /** Called when the user clicks the Send button */
     public void addEvent(View view) {
