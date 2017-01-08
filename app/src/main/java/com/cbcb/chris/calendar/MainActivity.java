@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,21 +38,22 @@ public class MainActivity extends AppCompatActivity {
         DataBaseHelper db = new DataBaseHelper(this);
 
 // Inserting Shop/Rows
-        /*Log.d("Insert: ", "Inserting ..");
-        db.addShop(new Shop(1,"Dockers", " 475 Brannan St #330, San Francisco, CA 94107, United States"));
-        db.addShop(new Shop(2,"Dunkin Donuts", "White Plains, NY 10601"));
+        Log.d("Insert: ", "Inserting ..");
+
+        //db.addEvent(new Event(1,"Dockers", new Time(3,3,5)));
+        /*db.addShop(new Shop(2,"Dunkin Donuts", "White Plains, NY 10601"));
         db.addShop(new Shop(3,"Pizza Porlar", "North West Avenue, Boston , USA"));
         db.addShop(new Shop(4,"Town Bakers", "Beverly Hills, CA 90210, USA"));
 */
 // Reading all shops
-        Log.d("Reading: ", "Reading all shops..");
-        List<Shop> shops = db.getAllShops();
+        Log.d("Reading: ", "Reading all events..");
+        List<Event> events = db.getAllEvents();
         ArrayList<String> shopList = new ArrayList<String>();
-        for (Shop shop : shops) {
-            String log = "Id: " + shop.getId() + " ,Name: " + shop.getName() + " ,Address: " + shop.getAddress();
+        for (Event event : events) {
+            String log = "Id: " + event.getId() + " ,Name: " + event.getName() + " ,Time: " + event.getTime().toString();
 // Writing shops to log
-            Log.d("Shop: : ", log);
-            shopList.add(shop.getName());
+            Log.d("Event: : ", log);
+            shopList.add(event.getName());
 
         }
 
