@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 // Inserting Shop/Rows
         Log.d("Insert: ", "Inserting ..");
 
-        //db.addEvent(new Event(1,"Dockers", new Time(3,3,5)));
+        db.addEvent(new Event(1,"Sam Test", new Time(3,3,5)));
         /*db.addShop(new Shop(2,"Dunkin Donuts", "White Plains, NY 10601"));
         db.addShop(new Shop(3,"Pizza Porlar", "North West Avenue, Boston , USA"));
         db.addShop(new Shop(4,"Town Bakers", "Beverly Hills, CA 90210, USA"));
