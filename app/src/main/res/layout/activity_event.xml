@@ -82,5 +82,8 @@
         android:entries="@array/event_type">
 
     </Spinner>
+    
+
+
 
 </RelativeLayout>
