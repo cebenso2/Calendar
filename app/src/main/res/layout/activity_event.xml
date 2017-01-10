@@ -82,8 +82,8 @@
         android:entries="@array/event_type">
 
     </Spinner>
-    
 
+    <include layout="@layout/weekly_event_sub"></include>
 
 
 </RelativeLayout>

@@ -48,7 +48,7 @@ public class EventActivity extends AppCompatActivity {
                 tc.setText(createClockText(minute,hourOfDay));
             }
         };
-        TimePickerDialog l=new TimePickerDialog(EventActivity.this,R.style.Theme_Dialog , t, 1, 1, false);
+        TimePickerDialog l=new TimePickerDialog(EventActivity.this,R.style.Theme_Dialog , t, 12, 0, false);
         l.show();
         Log.d("test","hello");
     }
