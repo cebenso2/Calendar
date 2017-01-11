@@ -18,8 +18,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatDialog;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -37,6 +40,28 @@ public class EventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
+        Spinner s=(Spinner)findViewById(R.id.spinner);
+        s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                RelativeLayout rl=(RelativeLayout)findViewById(R.id.insert);
+                rl.removeAllViews();
+                if(position==1){
+                    View child = getLayoutInflater().inflate(R.layout.dayly_event_sub,null);
+                    rl.addView(child);
+                }
+                else if(position==2){
+                    View child = getLayoutInflater().inflate(R.layout.weekly_event_sub, null);
+                    rl.addView(child);
+                }
+            } // to close the onItemSelected
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
+
     }
     public void setTime(View view){
         TimePickerDialog.OnTimeSetListener t=new TimePickerDialog.OnTimeSetListener() {
@@ -145,5 +170,10 @@ public class EventActivity extends AppCompatActivity {
         builder.setContentText(content);
         builder.setSmallIcon(android.R.drawable.ic_menu_recent_history);
         return builder.build();
+    }
+    public void selectEventType(View view){
+        Spinner s=(Spinner)findViewById(R.id.spinner);
+        int position=s.getSelectedItemPosition();
+
     }
 }
