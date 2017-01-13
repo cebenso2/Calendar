@@ -20,7 +20,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     // Database Version
     private static final int DATABASE_VERSION = 1;
     // Database Name
-    private static final String DATABASE_NAME = "eventsInfo";
+    private static final String DATABASE_NAME = "eventsInfo_best";
     // Contacts table name
     private static final String TABLE_EVENTS = "events";
     // Shops Table Columns names
@@ -58,6 +58,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         values.put(KEY_TYPE , event.getType());
         values.put(KEY_DATE,event.getDate());
         values.put(KEY_DAYS_OF_WEEK,convertBoolToInt(event.getDays_of_week()));
+        Log.d("Freq event",String.valueOf(event.getFreq()));
         values.put(KEY_FREQUENCY,event.getFreq());
         db.insert(TABLE_EVENTS, null, values);
         db.close(); // Closing database connection
@@ -66,7 +67,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     public Event getEvent(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_EVENTS, new String[] { KEY_ID,
-                        KEY_NAME, KEY_TIME,KEY_TYPE,KEY_DATE,KEY_DAYS_OF_WEEK }, KEY_ID + "=?",
+                        KEY_NAME, KEY_TIME,KEY_TYPE,KEY_DATE,KEY_DAYS_OF_WEEK,KEY_FREQUENCY }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
@@ -97,7 +98,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     public List<Event> getAllEvents() {
         List<Event> eventList = new ArrayList<Event>();
 // Select All Query
-        String selectQuery = "SELECT * FROM " + TABLE_EVENTS;
+        String selectQuery = "SELECT * FROM " + TABLE_EVENTS + " ORDER BY "+KEY_ID;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 // looping through all rows and adding to list
@@ -110,6 +111,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
                 event.setType(Integer.parseInt(cursor.getString(3)));
                 event.setDate(Integer.parseInt(cursor.getString(4)));
                 event.setDays_of_week(convertIntToBool(Integer.parseInt(cursor.getString(5))));
+                event.setFreq(Integer.parseInt(cursor.getString(6)));
 // Adding contact to list
                 eventList.add(event);
             } while (cursor.moveToNext());

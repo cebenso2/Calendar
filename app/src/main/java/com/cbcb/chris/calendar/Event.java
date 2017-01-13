@@ -34,6 +34,9 @@ public class Event {
         this.type=type;
         this.freq=freq;
     }
+    public Event(int id){
+        this.id=id;
+    }
 
     public Time getTime() {
         return time;

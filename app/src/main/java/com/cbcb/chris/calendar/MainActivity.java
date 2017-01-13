@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -29,9 +30,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     private ListView mainListView ;
-    private ArrayAdapter<String> listAdapter ;
+    private CustomAdapter customAdapter ;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -40,6 +41,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mainListView = (ListView) findViewById( R.id.list_view_main );
+        mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Event e=(Event)parent.getAdapter().getItem(position);
+                editEvent(view,e);
+            }
+        });
+        mainListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Event e=(Event)parent.getAdapter().getItem(position);
+                DataBaseHelper db =new DataBaseHelper(getBaseContext());
+                db.deleteEvent(e);
+                showEvents();
+                return true;
+            }
+        });
         showEvents();
 
     }
@@ -73,21 +92,25 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EventActivity.class);
         startActivity(intent);
     }
+    public void editEvent(View view, Event e) {
+        Intent intent = new Intent(this, EditEventActivity.class);
+        intent.putExtra("ID",e.getId());
+        startActivity(intent);
+    }
     private void showEvents(){
         DataBaseHelper db = new DataBaseHelper(this);
         Log.d("Reading: ", "Reading all events..");
-        List<Event> events = db.getAllEvents();
-        ArrayList<String> eventList = new ArrayList<String>();
-        for (Event event : events) {
-            String log = event.toString();
-            Log.d("Event: : ", log);
-            eventList.add(event.getName());
+        ArrayList<Event> eventList = new ArrayList<Event>(db.getAllEvents());
+        for (Event event : eventList) {
+            Log.d("Event: : ", event.toString());
         }
-        listAdapter = new ArrayAdapter<String>(this, R.layout.simple_row, eventList);
+        customAdapter = new CustomAdapter(this, R.layout.simple_row, eventList);
         mainListView = (ListView) findViewById( R.id.list_view_main );
-        mainListView.setAdapter( listAdapter );
+        mainListView.setAdapter( customAdapter );
         db.close();
     }
+
+
 
 
 }

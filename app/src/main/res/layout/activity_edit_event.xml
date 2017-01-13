@@ -147,7 +147,7 @@
 
 
     <Button
-        android:text="Add Event"
+        android:text="Save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ton2"

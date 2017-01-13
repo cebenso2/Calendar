@@ -1,45 +1,37 @@
 package com.cbcb.chris.calendar;
 
 import android.app.AlarmManager;
-import android.app.DatePickerDialog;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.RemoteInput;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
-import android.os.SystemClock;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDialog;
-import android.support.v7.widget.PopupMenu;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import java.sql.Array;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import static com.cbcb.chris.calendar.R.layout.repetition;
 
@@ -64,6 +56,22 @@ public class EventActivity extends AppCompatActivity {
         date=12;
         days_of_week= new boolean[]{false,false,false,false,false,false,false};
 
+    }
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent( event );
     }
 
     public void setTime(View view){
@@ -94,6 +102,9 @@ public class EventActivity extends AppCompatActivity {
             hourOfDay -= 12;
             meridiem="PM";
         }
+        if(hourOfDay==12){
+            meridiem="PM";
+        }
         hour=String.valueOf(hourOfDay);
         if(hourOfDay==0){
             hour="12";
@@ -113,6 +124,7 @@ public class EventActivity extends AppCompatActivity {
         String event_name=name.getText().toString();
         Time event_time=new Time(hours,minutes,0);
         DataBaseHelper db = new DataBaseHelper(this);
+        Log.d("freq",String.valueOf(freq));
         db.addEvent(new Event(1,event_name,event_time,type,date,days_of_week,freq));
         db.close();
         scheduleNotification(getNotification(event_name),event_time);
@@ -180,18 +192,15 @@ public class EventActivity extends AppCompatActivity {
         popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
         popupWindow.setFocusable(true);
         popupWindow.update();
-        Log.d("test","PopupWindow");
         Button b=(Button)child.findViewById(R.id.submit_repetition);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("test","test");
                 TextView tv=(TextView)findViewById(R.id.event_type);
                 Spinner s=(Spinner)child.findViewById(R.id.event_type_spinner);
                 type=s.getSelectedItemPosition();
                 tv.setText(s.getSelectedItem().toString());
                 s = (Spinner) child.findViewById(R.id.frequency_spinner);
-                freq = s.getSelectedItemPosition();
                 if(type==1) {
                     CheckBox cb = (CheckBox) child.findViewById(R.id.checkBox);
                     days_of_week[0] = cb.isChecked();
@@ -216,7 +225,6 @@ public class EventActivity extends AppCompatActivity {
         {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
-                Log.d("test","Select");
                 RelativeLayout rl=(RelativeLayout)child.findViewById(R.id.insert);
                 rl.removeAllViews();
                 if(position==0){
