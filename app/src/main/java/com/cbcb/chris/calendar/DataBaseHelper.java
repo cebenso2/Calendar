@@ -50,7 +50,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         Log.d("test","upgrade");
     }
     // Adding new shop
-    public void addEvent(Event event) {
+    public long addEvent(Event event) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, event.getName()); // Shop Name
@@ -60,8 +60,10 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         values.put(KEY_DAYS_OF_WEEK,convertBoolToInt(event.getDays_of_week()));
         Log.d("Freq event",String.valueOf(event.getFreq()));
         values.put(KEY_FREQUENCY,event.getFreq());
-        db.insert(TABLE_EVENTS, null, values);
+        long id=db.insert(TABLE_EVENTS, null, values);
+        Log.d("Id",""+id);
         db.close(); // Closing database connection
+        return id;
     }
 
     public Event getEvent(int id) {

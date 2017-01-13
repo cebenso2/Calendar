@@ -53,7 +53,7 @@ public class EventActivity extends AppCompatActivity {
         freq=0;
         hours=12;
         minutes=0;
-        date=12;
+        date=1;
         days_of_week= new boolean[]{false,false,false,false,false,false,false};
 
     }
@@ -121,29 +121,77 @@ public class EventActivity extends AppCompatActivity {
                     .setAction("Action", null).show();
             return;
         }
+        boolean day_set=false;
+        for(int i=0;i<7;i++){
+            day_set|=days_of_week[i];
+        }
+        if(type==1 && !day_set){
+            Snackbar.make(view, "Enter at least one day for weekly events", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            return;
+        }
         String event_name=name.getText().toString();
         Time event_time=new Time(hours,minutes,0);
         DataBaseHelper db = new DataBaseHelper(this);
-        Log.d("freq",String.valueOf(freq));
-        db.addEvent(new Event(1,event_name,event_time,type,date,days_of_week,freq));
+        Event e=new Event(1,event_name,event_time,type,date,days_of_week,freq);
+        e.setId((int)db.addEvent(e));
         db.close();
-        scheduleNotification(getNotification(event_name),event_time);
+        setEventAlarm(e);
         this.finish();
     }
-    private void scheduleNotification(Notification notification, Time time) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setEventAlarm(Event e){
+        Time time=e.getTime();
+        Notification n=getNotification(e.getName());
 
         Intent notificationIntent = new Intent(this, NotificationPublisher.class);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, time.getHours());
-        calendar.set(Calendar.MINUTE, time.getMinutes());
-        calendar.set(Calendar.SECOND,time.getSeconds());
-        Log.d("time",calendar.getTime().toString());
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, e.getId());
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, n);
+        notificationIntent.putExtra("Type",e.getType());
+        notificationIntent.putExtra("Time",time.toString());
+        notificationIntent.putExtra("DOW",CalendarUtil.convertBoolToInt(e.getDays_of_week()));
+        notificationIntent.putExtra("Date",e.getDate());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, e.getId(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Log.d("Create Event Id", ""+e.getId());
+        Calendar calendar=createEventTime(e);
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+        alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(),pendingIntent);
+
+    }
+    private Calendar createEventTime(Event e){
+        Calendar c=Calendar.getInstance();
+        c.setTimeInMillis(System.currentTimeMillis());
+        c.set(Calendar.HOUR_OF_DAY,e.getTime().getHours());
+        c.set(Calendar.MINUTE,e.getTime().getMinutes());
+        c.set(Calendar.SECOND,0);
+
+        if(e.getType()==0){
+            if(c.getTimeInMillis()<=System.currentTimeMillis()){
+                c.set(Calendar.DATE,c.get(Calendar.DATE)+1);
+            }
+        }
+        else if(e.getType()==1){
+            int day_of_week=c.get(Calendar.DAY_OF_WEEK);
+            for(int i=day_of_week-1;i<14;i++){
+                if(e.getDays_of_week()[i%7]){
+                    c.set(Calendar.DAY_OF_WEEK,(i+1)%7);
+                    if(i>=7){
+                        c.set(Calendar.DATE,c.get(Calendar.DATE)+7);
+                    }
+                }
+                if(c.getTimeInMillis()>System.currentTimeMillis()){
+                    break;
+                }
+            }
+        }
+        else{
+            c.set(Calendar.DATE,e.getDate());
+            if(c.getTimeInMillis()<=System.currentTimeMillis()){
+                c.set(Calendar.MONTH,c.get(Calendar.MONTH)+1);
+            }
+        }
+        Log.d("Monthyl",c.getTime().toString());
+        return c;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -175,11 +223,9 @@ public class EventActivity extends AppCompatActivity {
                         .addRemoteInput(remoteInput)
                         .build();
         Notification.Builder builder = new Notification.Builder(this);
-        builder.setColor(123);
         builder.setPriority(Notification.PRIORITY_HIGH);
         builder.addAction(action);
         builder.addAction(action1);
-
         builder.setContentTitle("Scheduled Notification");
         builder.setContentText(content);
         builder.setSmallIcon(android.R.drawable.ic_menu_recent_history);

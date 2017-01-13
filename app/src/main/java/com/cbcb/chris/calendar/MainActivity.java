@@ -53,6 +53,13 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Event e=(Event)parent.getAdapter().getItem(position);
+                Log.d("Delete Event Id", ""+e.getId());
+                Intent notificationIntent = new Intent(MainActivity.this, NotificationPublisher.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, e.getId(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                AlarmManager am=(AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                pendingIntent.cancel();
+                am.cancel(pendingIntent);
+
                 DataBaseHelper db =new DataBaseHelper(getBaseContext());
                 db.deleteEvent(e);
                 showEvents();
