@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         showEvents();
 
     }
@@ -71,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         super.onRestart();
         showEvents();
     }
-    /** Called when the user clicks the Send button */
     public void addEvent(View view) {
         Intent intent = new Intent(this, EventActivity.class);
         startActivity(intent);
@@ -82,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         List<Event> events = db.getAllEvents();
         ArrayList<String> eventList = new ArrayList<String>();
         for (Event event : events) {
-            String log = "Id: " + event.getId() + " ,Name: " + event.getName() + " ,Time: " + event.getTime().toString();
+            String log = event.toString();
             Log.d("Event: : ", log);
             eventList.add(event.getName());
         }

@@ -3,7 +3,6 @@
     <string name="event_add">Create Event</string>
     <string name="action_settings">Settings</string>
     <string-array name="event_type">
-        <item>Select Event Type</item>
         <item>Daily</item>
         <item>Weekly</item>
         <item>Monthly</item>
