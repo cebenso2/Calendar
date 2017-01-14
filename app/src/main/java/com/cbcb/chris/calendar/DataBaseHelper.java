@@ -20,7 +20,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     // Database Version
     private static final int DATABASE_VERSION = 1;
     // Database Name
-    private static final String DATABASE_NAME = "eventsInfo_best";
+    private static final String DATABASE_NAME = "eventsInfo_v2";
     // Contacts table name
     private static final String TABLE_EVENTS = "events";
     // Shops Table Columns names
@@ -32,6 +32,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     private static final String KEY_DAYS_OF_WEEK = "week";
     private static final String KEY_FREQUENCY = "freq";
 
+    private static final String TABLE_EVENTS_DATA = "events_data";
+    // Shops Table Columns names
+    private static final String KEY_IDENTIFIER = "id";
+    private static final String KEY_START_TIME = "startTime";
+    private static final String KEY_END_TIME = "endTime";
+    private static final String KEY_Q1="q1";
+    private static final String[] columns={KEY_IDENTIFIER,KEY_START_TIME,KEY_END_TIME,KEY_Q1};
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,13 +48,27 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_EVENTS + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_TIME + " Time," + KEY_TYPE +" INTEGER,"+KEY_DATE+" INTEGER,"+KEY_DAYS_OF_WEEK+ " INTEGER,"+ KEY_FREQUENCY+" INTEGER"+")";
         Log.d("test","create");
         Log.d("test",CREATE_CONTACTS_TABLE);
+        String CREATE_EVENT_DATA_TABLE = "CREATE TABLE " + TABLE_EVENTS_DATA + "(" + KEY_IDENTIFIER + " INTEGER," + KEY_START_TIME + " TIME," + KEY_END_TIME + " Time," + KEY_Q1 +" INTEGER"+")";
         db.execSQL(CREATE_CONTACTS_TABLE);
+        db.execSQL(CREATE_EVENT_DATA_TABLE);
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS_DATA);
         onCreate(db);
         Log.d("test","upgrade");
+    }
+
+    public void addEventData(int id, Time start, Time end, int q1) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_IDENTIFIER, id);
+        values.put(KEY_START_TIME , start.toString());
+        values.put(KEY_END_TIME , end.toString());
+        values.put(KEY_Q1,q1);
+        db.insert(TABLE_EVENTS_DATA, null, values);
+        db.close();
     }
     // Adding new shop
     public long addEvent(Event event) {
@@ -121,6 +142,23 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 // return contact list
         return eventList;
     }
+    public void showAllEventData() {
+
+        String selectQuery = "SELECT * FROM " + TABLE_EVENTS_DATA;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String builder="";
+                for( int i =0; i<4;i++){
+                    builder+=" "+columns[i]+": "+cursor.getString(i);
+                }
+                Log.d("Event Data", builder);
+            } while (cursor.moveToNext());
+        }
+
+    }
     // Getting shops Count
     public int getEventsCount() {
         String countQuery = "SELECT * FROM " + TABLE_EVENTS;
@@ -145,6 +183,12 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_EVENTS, KEY_ID + " = ?",
                 new String[] { String.valueOf(event.getId()) });
+        db.close();
+    }
+    public void deleteEventData(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_EVENTS_DATA, KEY_IDENTIFIER + " = ?",
+                new String[] { String.valueOf(id) });
         db.close();
     }
 }

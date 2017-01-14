@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity{
 
                 DataBaseHelper db =new DataBaseHelper(getBaseContext());
                 db.deleteEvent(e);
+                db.deleteEventData(e.getId());
                 showEvents();
                 return true;
             }

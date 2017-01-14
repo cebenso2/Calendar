@@ -142,7 +142,7 @@ public class EventActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setEventAlarm(Event e){
         Time time=e.getTime();
-        Notification n=getNotification(e.getName());
+        Notification n=getNotification(e);
 
         Intent notificationIntent = new Intent(this, NotificationPublisher.class);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, e.getId());
@@ -195,40 +195,38 @@ public class EventActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private Notification getNotification(String content) {
+    private Notification getNotification(Event e) {
 
         String replyLabel = "test";
-        Intent resultIntent = new Intent(this, EventActivity.class);
+        Intent resultIntent = new Intent(this, CompletedEvent.class);
+        resultIntent.putExtra("ID",e.getId());
+
+
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(
                         this,
-                        0,
+                        e.getId(),
                         resultIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
-
-
         RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
                 .setLabel(replyLabel)
                 .build();
         Notification.Action action =
-                new Notification.Action.Builder(android.R.drawable.ic_menu_recent_history,
+                new Notification.Action.Builder(android.R.drawable.ic_menu_save,
                         "Completed",resultPendingIntent)
                         .addRemoteInput(remoteInput)
                         .build();
-        Notification.Action action1 =
-                new Notification.Action.Builder(android.R.drawable.ic_menu_recent_history,
-                        "Failed",resultPendingIntent)
-                        .addRemoteInput(remoteInput)
-                        .build();
         Notification.Builder builder = new Notification.Builder(this);
+
         builder.setPriority(Notification.PRIORITY_HIGH);
         builder.addAction(action);
-        builder.addAction(action1);
-        builder.setContentTitle("Scheduled Notification");
-        builder.setContentText(content);
-        builder.setSmallIcon(android.R.drawable.ic_menu_recent_history);
+        builder.setContentTitle("Calendar: "+e.getName());
+        builder.setContentText(e.getTime().toString());
+        builder.setOngoing(true);
+        builder.setSmallIcon(android.R.drawable.sym_def_app_icon);
         return builder.build();
     }
     public void setRepetition(View view){
