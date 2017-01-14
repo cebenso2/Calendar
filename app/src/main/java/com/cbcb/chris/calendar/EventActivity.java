@@ -24,15 +24,19 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Calendar;
 
+import static com.cbcb.chris.calendar.R.layout.quantitative;
 import static com.cbcb.chris.calendar.R.layout.repetition;
 
 public class EventActivity extends AppCompatActivity {
@@ -44,7 +48,8 @@ public class EventActivity extends AppCompatActivity {
     private boolean[] days_of_week;
     private static final String KEY_TEXT_REPLY = "key_text_reply";
     private static final String[] type_dict={"day","week","month"};
-
+    private ArrayList<String> quant_names;
+    private ArrayList<String> quant_units;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +60,8 @@ public class EventActivity extends AppCompatActivity {
         minutes=0;
         date=1;
         days_of_week= new boolean[]{false,false,false,false,false,false,false};
+        quant_names=new ArrayList<String>();
+        quant_units=new ArrayList<String>();
 
     }
     @Override
@@ -350,11 +357,79 @@ public class EventActivity extends AppCompatActivity {
         f.setSelection(freq);
 
         popupWindow.showAtLocation(findViewById(R.id.activity_event), Gravity.CENTER,0,0);
-
+    }
+    public void addQuantitative(View view){
+        final View child = getLayoutInflater().inflate(quantitative,null);
+        final PopupWindow popupWindow=new PopupWindow(child);
+        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setFocusable(true);
+        popupWindow.showAtLocation(findViewById(R.id.activity_event), Gravity.CENTER,0,0);
+        Button b=(Button)child.findViewById(R.id.submit_quant);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText et_name=(EditText)child.findViewById(R.id.quant_name_edit);
+                EditText et_units=(EditText)child.findViewById(R.id.quant_unit_edit);
+                if(et_name.getText().toString().length()==0 || et_units.getText().toString().length()==0){
+                    popupWindow.dismiss();
+                    return;
+                }
+                quant_names.add(et_name.getText().toString());
+                quant_units.add(et_units.getText().toString());
+                displayQauntFields();
+                popupWindow.dismiss();
+            }
+        });
 
     }
-    public void setQuantitativeFields(View view){
-
+    private void displayQauntFields(){
+        final LinearLayout name_ll=(LinearLayout)findViewById(R.id.quant_name_lin);
+        LinearLayout unit_ll=(LinearLayout)findViewById(R.id.quant_unit_lin);
+        name_ll.removeAllViews();
+        unit_ll.removeAllViews();
+        for(int i=0; i<quant_names.size();i++){
+            final TextView tv_name=new TextView(this);
+            tv_name.setText(quant_names.get(i));
+            tv_name.setTextSize(20);
+            tv_name.setGravity(Gravity.CENTER);
+            tv_name.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int index=0;
+                    for(int i=0;i<quant_names.size();i++){
+                        if(quant_names.get(i)==tv_name.getText()){
+                            index=i;
+                        }
+                    }
+                    quant_names.remove(index);
+                    quant_units.remove(index);
+                    displayQauntFields();
+                    return true;
+                }
+            });
+            name_ll.addView(tv_name,i);
+            final TextView tv_unit=new TextView(this);
+            tv_unit.setText(quant_units.get(i));
+            tv_unit.setTextSize(20);
+            tv_unit.setGravity(Gravity.CENTER);
+            tv_unit.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int index=0;
+                    for(int i=0;i<quant_units.size();i++){
+                        if(quant_units.get(i)==tv_unit.getText()){
+                            index=i;
+                        }
+                    }
+                    quant_names.remove(index);
+                    quant_units.remove(index);
+                    displayQauntFields();
+                    return true;
+                }
+            });;
+            unit_ll.addView(tv_unit,i);
+        }
 
     }
 }
