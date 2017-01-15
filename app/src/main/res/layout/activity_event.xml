@@ -58,9 +58,7 @@
             android:textSize="30dp"
             android:id="@+id/textClock"
             android:text="12:00 AM"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:onClick="setTime"/>
 
 
@@ -98,10 +96,8 @@
             android:textSize="30dp"
             android:id="@+id/event_type"
             android:text="Weekly"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:onClick="setRepetition" />
+            android:onClick="setRepetition"
+            android:layout_centerVertical="true"/>
 
 
     </RelativeLayout>
@@ -111,107 +107,71 @@
         android:layout_height="wrap_content"
         android:id="@+id/quantTitle"
         android:layout_below="@id/eventTypeLayout"
-        android:text="Quantitative Fields"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:gravity="center"
-        android:background="@color/colorPrimary"
-        android:textColor="#FFFFFF"/>
-    <ScrollView
+        android:text="Quantitative Fields" />
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/quant_field1"
         android:layout_below="@+id/quantTitle"
-        android:layout_above="@+id/ton2"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:background="#FFFFFF">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/colorPrimary">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin">
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Name"
-                        android:gravity="center"
-                        android:textColor="@color/bright_green"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Unit"
-                        android:gravity="center"
-                        android:textColor="@color/bright_green"/>
-                </LinearLayout>
 
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/quant_name_lin">
-
-                </LinearLayout>
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/quant_unit_lin">
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/quantFieldLayout"
+            android:clickable="true"
+            android:tint="@color/bright_green"
+            app:srcCompat="@android:drawable/ic_delete"
+            android:id="@+id/remove_quant"
+            android:layout_alignParentRight="true"
+            android:onClick="setRepetition"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/remove_quant"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:textSize="25dp"
+            android:id="@+id/quanttext1"
+            android:text="1. Bench Press - Reps"
+            android:onClick="setRepetition"
+            android:layout_centerVertical="true"/>
 
 
-            <android.support.design.widget.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:tint="@color/bright_green"
-                app:srcCompat="@android:drawable/ic_input_add"
-                android:id="@+id/setQuantFab"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:layout_centerHorizontal="true"
-                android:onClick="addQuantitative" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/addQuantLayout"
+        android:layout_below="@+id/quant_field1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
 
-        </RelativeLayout>
-        </LinearLayout>
-    </ScrollView>
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:tint="@color/bright_green"
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:id="@+id/add_quant_field"
+            android:layout_alignParentRight="true"
+            android:onClick="setRepetition"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:id="@+id/addquanttext"
+            android:text="Add Field"
+            android:onClick="setRepetition"
+            android:layout_centerVertical="true"/>
+
+
+    </RelativeLayout>
 
 
 

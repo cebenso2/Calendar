@@ -384,52 +384,7 @@ public class EventActivity extends AppCompatActivity {
 
     }
     private void displayQauntFields(){
-        final LinearLayout name_ll=(LinearLayout)findViewById(R.id.quant_name_lin);
-        LinearLayout unit_ll=(LinearLayout)findViewById(R.id.quant_unit_lin);
-        name_ll.removeAllViews();
-        unit_ll.removeAllViews();
-        for(int i=0; i<quant_names.size();i++){
-            final TextView tv_name=new TextView(this);
-            tv_name.setText(quant_names.get(i));
-            tv_name.setTextSize(20);
-            tv_name.setGravity(Gravity.CENTER);
-            tv_name.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    int index=0;
-                    for(int i=0;i<quant_names.size();i++){
-                        if(quant_names.get(i)==tv_name.getText()){
-                            index=i;
-                        }
-                    }
-                    quant_names.remove(index);
-                    quant_units.remove(index);
-                    displayQauntFields();
-                    return true;
-                }
-            });
-            name_ll.addView(tv_name,i);
-            final TextView tv_unit=new TextView(this);
-            tv_unit.setText(quant_units.get(i));
-            tv_unit.setTextSize(20);
-            tv_unit.setGravity(Gravity.CENTER);
-            tv_unit.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    int index=0;
-                    for(int i=0;i<quant_units.size();i++){
-                        if(quant_units.get(i)==tv_unit.getText()){
-                            index=i;
-                        }
-                    }
-                    quant_names.remove(index);
-                    quant_units.remove(index);
-                    displayQauntFields();
-                    return true;
-                }
-            });;
-            unit_ll.addView(tv_unit,i);
-        }
+
 
     }
 }
