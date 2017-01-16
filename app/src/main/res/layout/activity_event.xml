@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:tint="@color/bright_green"
-            app:srcCompat="@android:drawable/ic_menu_edit"
+            app:srcCompat="@android:drawable/ic_popup_sync"
             android:id="@+id/setEventTypeFab"
             android:layout_alignParentRight="true"
             android:onClick="setRepetition"/>

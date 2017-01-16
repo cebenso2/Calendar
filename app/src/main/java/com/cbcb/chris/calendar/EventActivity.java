@@ -365,7 +365,6 @@ public class EventActivity extends AppCompatActivity {
         popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
         popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
         popupWindow.setFocusable(true);
-        popupWindow.showAtLocation(findViewById(R.id.activity_event), Gravity.CENTER,0,0);
         Button b=(Button)child.findViewById(R.id.submit_quant);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -382,6 +381,7 @@ public class EventActivity extends AppCompatActivity {
                 popupWindow.dismiss();
             }
         });
+        popupWindow.showAtLocation(findViewById(R.id.timeLayout), Gravity.CENTER,0,0);
 
     }
     public void deleteQuantitative(View view){

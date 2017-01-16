@@ -21,8 +21,7 @@
         <activity
             android:name=".EventActivity"
             android:label="@string/event_add"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:screenOrientation="portrait" />
 
         <receiver android:name=".NotificationPublisher" />
 

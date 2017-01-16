@@ -51,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/quant_unit_edit"
-            android:text="Add"
+            android:text="Done"
             android:id="@+id/submit_quant"/>
     </RelativeLayout>
 </LinearLayout>
