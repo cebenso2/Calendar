@@ -2,7 +2,7 @@
     <string name="app_name">Calendar</string>
     <string name="event_add">Create Event</string>
     <string name="event_edit">Edit Event</string>
-    <string name="event_save_data">Save Completetion Data</string>
+    <string name="event_save_data">Save Completion Data</string>
     <string name="action_settings">Settings</string>
     <string-array name="event_type">
         <item>Daily</item>

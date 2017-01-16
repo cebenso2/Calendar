@@ -108,45 +108,30 @@
         android:id="@+id/quantTitle"
         android:layout_below="@id/eventTypeLayout"
         android:text="Quantitative Fields" />
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/quant_field1"
         android:layout_below="@+id/quantTitle"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="@dimen/activity_vertical_margin">
+        android:layout_above="@+id/ton2">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
 
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:tint="@color/bright_green"
-            app:srcCompat="@android:drawable/ic_delete"
-            android:id="@+id/remove_quant"
-            android:layout_alignParentRight="true"
-            android:onClick="setRepetition"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/remove_quant"
-            android:layout_alignParentLeft="true"
-            android:layout_marginRight="@dimen/activity_vertical_margin"
-            android:textSize="25dp"
-            android:id="@+id/quanttext1"
-            android:text="1. Bench Press - Reps"
-            android:onClick="setRepetition"
-            android:layout_centerVertical="true"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/insert_quant">
 
 
-    </RelativeLayout>
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/addQuantLayout"
-        android:layout_below="@+id/quant_field1"
+        android:layout_below="@+id/insert_quant"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
@@ -159,7 +144,7 @@
             app:srcCompat="@android:drawable/ic_input_add"
             android:id="@+id/add_quant_field"
             android:layout_alignParentRight="true"
-            android:onClick="setRepetition"/>
+            android:onClick="addQuantitative"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -167,12 +152,13 @@
             android:textSize="25dp"
             android:id="@+id/addquanttext"
             android:text="Add Field"
-            android:onClick="setRepetition"
+            android:onClick="addQuantitative"
             android:layout_centerVertical="true"/>
 
 
     </RelativeLayout>
-
+    </RelativeLayout>
+    </ScrollView>
 
 
     <Button
@@ -183,7 +169,8 @@
         android:layout_alignParentBottom="true"
         android:background="@color/colorPrimaryDark"
         android:textColor="@color/bright_green"
-        android:onClick="addEventToDB"/>
+        android:onClick="addEventToDB"
+        android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
 
 

@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -140,7 +141,7 @@ public class EventActivity extends AppCompatActivity {
         String event_name=name.getText().toString();
         Time event_time=new Time(hours,minutes,0);
         DataBaseHelper db = new DataBaseHelper(this);
-        Event e=new Event(1,event_name,event_time,type,date,days_of_week,freq);
+        Event e=new Event(1,event_name,event_time,type,date,days_of_week,freq+1);
         e.setId((int)db.addEvent(e));
         db.close();
         setEventAlarm(e);
@@ -320,7 +321,7 @@ public class EventActivity extends AppCompatActivity {
 
 
                 TextView tv=(TextView)child.findViewById(R.id.textView5);
-                if(freq>1){
+                if(freq>0){
                     tv.setText(type_dict[position]+"s");
                 }
                 else{
@@ -339,9 +340,9 @@ public class EventActivity extends AppCompatActivity {
         {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
-                freq=position+1;
+                freq=position;
                 TextView tv=(TextView)child.findViewById(R.id.textView5);
-                if(freq>1){
+                if(freq>0){
                     tv.setText(type_dict[type]+"s");
                 }
                 else{
@@ -383,8 +384,25 @@ public class EventActivity extends AppCompatActivity {
         });
 
     }
-    private void displayQauntFields(){
+    public void deleteQuantitative(View view){
+        int id=view.getId();
+        quant_names.remove(id);
+        quant_units.remove(id);
+        displayQauntFields();
 
+    }
+    private void displayQauntFields(){
+        LinearLayout insert_quant= (LinearLayout)findViewById(R.id.insert_quant);
+        insert_quant.removeAllViews();
+        for(int i=0;i<quant_names.size();i++){
+            View qf = getLayoutInflater().inflate(R.layout.quant_field_sub,null);
+            FloatingActionButton fab=(FloatingActionButton)qf.findViewById(R.id.remove_quant);
+            fab.setId(i);
+            TextView q=(TextView)qf.findViewById(R.id.quant_text_all);
+            q.setText(""+(i+1)+". "+quant_names.get(i)+ " - "+quant_units.get(i));
+            q.setId(i);
+            insert_quant.addView(qf);
+        }
 
     }
 }

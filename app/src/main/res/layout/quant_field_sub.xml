@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/quant_field"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        >
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:tint="@color/bright_green"
+            app:srcCompat="@android:drawable/ic_delete"
+            android:id="@+id/remove_quant"
+            android:layout_alignParentRight="true"
+            android:onClick="deleteQuantitative"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/remove_quant"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:textSize="25dp"
+            android:id="@+id/quant_text_all"
+            android:text="1. Bench Press - Reps"
+            android:onClick="deleteQuantitative"
+            android:layout_centerVertical="true"/>
+
+
+    </RelativeLayout>
+</RelativeLayout>
