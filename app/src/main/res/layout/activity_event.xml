@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:textSize="30dp"
             android:id="@+id/textClock"
-            android:text="12:00 AM"
+            android:text="12:00 PM"
             android:layout_centerVertical="true"
             android:onClick="setTime"/>
 
