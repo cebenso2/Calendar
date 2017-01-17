@@ -20,10 +20,10 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     // Database Version
     private static final int DATABASE_VERSION = 1;
     // Database Name
-    private static final String DATABASE_NAME = "eventsInfo_v2";
-    // Contacts table name
+    private static final String DATABASE_NAME = "eventsInfo_v4";
+
     private static final String TABLE_EVENTS = "events";
-    // Shops Table Columns names
+
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
     private static final String KEY_TIME = "time";
@@ -33,12 +33,17 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     private static final String KEY_FREQUENCY = "freq";
 
     private static final String TABLE_EVENTS_DATA = "events_data";
-    // Shops Table Columns names
-    private static final String KEY_IDENTIFIER = "id";
+
     private static final String KEY_START_TIME = "startTime";
     private static final String KEY_END_TIME = "endTime";
     private static final String KEY_Q1="q1";
-    private static final String[] columns={KEY_IDENTIFIER,KEY_START_TIME,KEY_END_TIME,KEY_Q1};
+    private static final String[] columns={KEY_ID,KEY_START_TIME,KEY_END_TIME,KEY_Q1};
+
+    private static final String TABLE_QUANT_FIELDS = "quant_fields";
+
+    private static final String KEY_EVENT_ID = "event_id";
+    private static final String KEY_UNITS="units";
+
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,9 +53,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_EVENTS + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_TIME + " Time," + KEY_TYPE +" INTEGER,"+KEY_DATE+" INTEGER,"+KEY_DAYS_OF_WEEK+ " INTEGER,"+ KEY_FREQUENCY+" INTEGER"+")";
         Log.d("test","create");
         Log.d("test",CREATE_CONTACTS_TABLE);
-        String CREATE_EVENT_DATA_TABLE = "CREATE TABLE " + TABLE_EVENTS_DATA + "(" + KEY_IDENTIFIER + " INTEGER," + KEY_START_TIME + " TIME," + KEY_END_TIME + " Time," + KEY_Q1 +" INTEGER"+")";
+        String CREATE_EVENT_DATA_TABLE = "CREATE TABLE " + TABLE_EVENTS_DATA + "(" + KEY_ID + " INTEGER," + KEY_START_TIME + " TIME," + KEY_END_TIME + " Time," + KEY_Q1 +" INTEGER"+")";
+        String CREATE_QUANT_FIELDS_TABLE = "CREATE TABLE " + TABLE_QUANT_FIELDS + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_EVENT_ID + " INTEGER," + KEY_NAME + " TEXT," +KEY_UNITS + " TEXT)";
         db.execSQL(CREATE_CONTACTS_TABLE);
         db.execSQL(CREATE_EVENT_DATA_TABLE);
+        db.execSQL(CREATE_QUANT_FIELDS_TABLE);
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -63,7 +70,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     public void addEventData(int id, Time start, Time end, int q1) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_IDENTIFIER, id);
+        values.put(KEY_ID, id);
         values.put(KEY_START_TIME , start.toString());
         values.put(KEY_END_TIME , end.toString());
         values.put(KEY_Q1,q1);
@@ -78,11 +85,16 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         values.put(KEY_TIME , event.getTime().toString()); // Shop Phone Number
         values.put(KEY_TYPE , event.getType());
         values.put(KEY_DATE,event.getDate());
-        values.put(KEY_DAYS_OF_WEEK,convertBoolToInt(event.getDays_of_week()));
-        Log.d("Freq event",String.valueOf(event.getFreq()));
+        values.put(KEY_DAYS_OF_WEEK,CalendarUtil.convertBoolToInt(event.getDays_of_week()));
         values.put(KEY_FREQUENCY,event.getFreq());
         long id=db.insert(TABLE_EVENTS, null, values);
-        Log.d("Id",""+id);
+        for(int i=0;i<event.getQuant_names().size();i++){
+            values=new ContentValues();
+            values.put(KEY_EVENT_ID,id);
+            values.put(KEY_NAME,event.getQuant_names().get(i));
+            values.put(KEY_UNITS,event.getQuant_units().get(i));
+            db.insert(TABLE_QUANT_FIELDS,null,values);
+        }
         db.close(); // Closing database connection
         return id;
     }
@@ -94,30 +106,33 @@ public class DataBaseHelper extends SQLiteOpenHelper{
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
-        Event event = new Event(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), Time.valueOf(cursor.getString(2)),Integer.valueOf(cursor.getString(3)),Integer.valueOf(cursor.getString(4)),convertIntToBool(Integer.valueOf(cursor.getString(5))),Integer.valueOf(cursor.getString(6)));
+        Event event = new Event();
+        event.setId(Integer.parseInt(cursor.getString(0)));
+        event.setName(cursor.getString(1));
+        event.setTime(Time.valueOf(cursor.getString(2)));
+        event.setType(Integer.parseInt(cursor.getString(3)));
+        event.setDate(Integer.parseInt(cursor.getString(4)));
+        event.setDays_of_week(CalendarUtil.convertIntToBool(Integer.parseInt(cursor.getString(5))));
+        event.setFreq(Integer.parseInt(cursor.getString(6)));
+        String selectQuantFieldsQuery="Select * FROM " + TABLE_QUANT_FIELDS +" WHERE " +KEY_EVENT_ID+ " = " + String.valueOf(id);
+        cursor=db.rawQuery(selectQuantFieldsQuery,null);
+        ArrayList<String> names=new ArrayList<String>();
+        ArrayList<String> units=new ArrayList<String>();
 
+        if (cursor.moveToFirst()) {
+            do {
+                String name = cursor.getString(2);
+                String unit = cursor.getString(3);
+                names.add(name);
+                units.add(unit);
+
+            } while (cursor.moveToNext());
+        }
+        event.setQuant_names(names);
+        event.setQuant_units(units);
         return event;
     }
-    private boolean[] convertIntToBool(int d){
-        boolean[] b=new boolean[7];
-        int count=0;
-        while(d>0){
-            b[count]= (d& 1)>0;
-            d=d>>1;
-            count+=1;
-        }
-        return b;
-    }
-    private int convertBoolToInt(boolean[] b){
-        int result=0;
-        for(int i =0; i<7;i++){
-            if(b[i]){
-                result+=Math.pow(2,i);
-            }
-        }
-        return result;
-    }
+
     public List<Event> getAllEvents() {
         List<Event> eventList = new ArrayList<Event>();
 // Select All Query
@@ -133,29 +148,37 @@ public class DataBaseHelper extends SQLiteOpenHelper{
                 event.setTime(Time.valueOf(cursor.getString(2)));
                 event.setType(Integer.parseInt(cursor.getString(3)));
                 event.setDate(Integer.parseInt(cursor.getString(4)));
-                event.setDays_of_week(convertIntToBool(Integer.parseInt(cursor.getString(5))));
+                event.setDays_of_week(CalendarUtil.convertIntToBool(Integer.parseInt(cursor.getString(5))));
                 event.setFreq(Integer.parseInt(cursor.getString(6)));
+                String selectQuantFieldsQuery="Select * FROM " + TABLE_QUANT_FIELDS +" WHERE " +KEY_EVENT_ID+ " = " + String.valueOf(event.getId());
+                Cursor cursor1=db.rawQuery(selectQuantFieldsQuery,null);
+                ArrayList<String> names=new ArrayList<String>();
+                ArrayList<String> units=new ArrayList<String>();
+
+                if (cursor1.moveToFirst()) {
+                    do {
+                        String name = cursor1.getString(2);
+                        String unit = cursor1.getString(3);
+                        names.add(name);
+                        units.add(unit);
+
+                    } while (cursor1.moveToNext());
+                }
+                event.setQuant_names(names);
+                event.setQuant_units(units);
 // Adding contact to list
                 eventList.add(event);
             } while (cursor.moveToNext());
         }
+
 // return contact list
         return eventList;
     }
     public void showAllEventData() {
 
-        String selectQuery = "SELECT * FROM " + TABLE_EVENTS_DATA;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                String builder="";
-                for( int i =0; i<4;i++){
-                    builder+=" "+columns[i]+": "+cursor.getString(i);
-                }
-                Log.d("Event Data", builder);
-            } while (cursor.moveToNext());
+        List<Event> events= getAllEvents();
+        for( Event e: events){
+            Log.d("Event",e.toString());
         }
 
     }
@@ -183,12 +206,10 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_EVENTS, KEY_ID + " = ?",
                 new String[] { String.valueOf(event.getId()) });
+        db.delete(TABLE_QUANT_FIELDS, KEY_EVENT_ID + " = ?",new String[] { String.valueOf(event.getId()) });
+        db.delete(TABLE_EVENTS_DATA, KEY_ID + " = ?",
+                new String[] { String.valueOf(event.getId()) });
         db.close();
     }
-    public void deleteEventData(int id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_EVENTS_DATA, KEY_IDENTIFIER + " = ?",
-                new String[] { String.valueOf(id) });
-        db.close();
-    }
+
 }

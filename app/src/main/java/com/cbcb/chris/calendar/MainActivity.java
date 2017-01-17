@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity{
 
                 DataBaseHelper db =new DataBaseHelper(getBaseContext());
                 db.deleteEvent(e);
-                db.deleteEventData(e.getId());
                 showEvents();
                 return true;
             }
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity{
         Log.d("Reading: ", "Reading all events..");
         ArrayList<Event> eventList = new ArrayList<Event>(db.getAllEvents());
         for (Event event : eventList) {
-            Log.d("Event: : ", event.toString());
+            Log.d("Event: ", event.toString());
         }
         customAdapter = new CustomAdapter(this, R.layout.simple_row, eventList);
         mainListView = (ListView) findViewById( R.id.list_view_main );

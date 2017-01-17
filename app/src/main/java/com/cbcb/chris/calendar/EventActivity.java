@@ -141,7 +141,7 @@ public class EventActivity extends AppCompatActivity {
         String event_name=name.getText().toString();
         Time event_time=new Time(hours,minutes,0);
         DataBaseHelper db = new DataBaseHelper(this);
-        Event e=new Event(1,event_name,event_time,type,date,days_of_week,freq+1);
+        Event e=new Event(1,event_name,event_time,type,date,days_of_week,freq+1,quant_names,quant_units);
         e.setId((int)db.addEvent(e));
         db.close();
         setEventAlarm(e);
