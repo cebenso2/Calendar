@@ -14,6 +14,7 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -63,6 +64,8 @@ public class EventActivity extends AppCompatActivity {
         days_of_week= new boolean[]{false,false,false,false,false,false,false};
         quant_names=new ArrayList<String>();
         quant_units=new ArrayList<String>();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
     }
     @Override
@@ -148,7 +151,7 @@ public class EventActivity extends AppCompatActivity {
         this.finish();
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setEventAlarm(Event e){
+    public void setEventAlarm(Event e){
         Time time=e.getTime();
         Notification n=getNotification(e);
 
@@ -404,5 +407,8 @@ public class EventActivity extends AppCompatActivity {
             insert_quant.addView(qf);
         }
 
+    }
+    public void close(View view){
+        this.finish();
     }
 }

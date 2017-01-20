@@ -102,22 +102,21 @@
         android:text="Quantitative Fields"
         android:gravity="center"
         android:id="@+id/quant_title" />
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/quant_title"
-        android:text="Quant 1"
-        android:id="@+id/quant_title1"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Units"
-        android:inputType="number"
-        android:layout_below="@id/quant_title1"/>
+        android:id="@+id/insert"
+        android:orientation="vertical">
+
+
+    </LinearLayout>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save Completion"
         android:layout_alignParentBottom="true"
         android:onClick="saveData"/>
+
 </RelativeLayout>
+

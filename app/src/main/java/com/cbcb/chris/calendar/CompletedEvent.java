@@ -4,21 +4,25 @@ import android.app.NotificationManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.sql.Time;
+import java.util.ArrayList;
 
 public class CompletedEvent extends AppCompatActivity {
     private int start_hour;
     private int start_min;
     private int end_hour;
     private int end_min;
-    private int id;
+    private Event event;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,12 +33,13 @@ public class CompletedEvent extends AppCompatActivity {
         end_min=0;
 
         TextView tv =(TextView)findViewById(R.id.event_name);
-        id=getIntent().getExtras().getInt("ID");
+        int id=getIntent().getExtras().getInt("ID");
         DataBaseHelper db= new DataBaseHelper(this);
-        Event e=db.getEvent(id);
-        db.close();
+        event=db.getEvent(id);
 
-        tv.setText(e.getName());
+        db.close();
+        tv.setText(event.getName());
+        displayQauntFields();
 
     }
     public void setStartTime(View view){
@@ -63,14 +68,39 @@ public class CompletedEvent extends AppCompatActivity {
         TimePickerDialog l=new TimePickerDialog(CompletedEvent.this,R.style.Theme_Dialog , t, end_hour, end_min, false);
         l.show();
     }
+
     public void saveData(View view){
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(id);
+        notificationManager.cancel(event.getId());
         DataBaseHelper db= new DataBaseHelper(this);
-        db.addEventData(id,new Time(start_hour,start_min,0),new Time(end_hour,end_min,0), 1);
-        db.showAllEventData();
+        db.addEventData(event.getId(),new Time(start_hour,start_min,0),new Time(end_hour,end_min,0), getQuantFieldValues());
+        db.showAllEvents();
+        db.showEventCompletionData(event.getId());
         db.close();
         this.finish();
+    }
+    private ArrayList<Double> getQuantFieldValues(){
+        ArrayList<Double> values=new ArrayList<Double>();
+        LinearLayout insert_quant= (LinearLayout)findViewById(R.id.insert);
+        for(int i=0; i<insert_quant.getChildCount();i++){
+            EditText qi =(EditText)findViewById(i);
+            values.add(Double.valueOf(qi.getText().toString()));
+        }
+        return values;
+    }
+    private void displayQauntFields(){
+        LinearLayout insert_quant= (LinearLayout)findViewById(R.id.insert);
+        insert_quant.removeAllViews();
+        for(int i=0;i<event.getQuant_names().size();i++){
+            View qf = getLayoutInflater().inflate(R.layout.quant_field_input,null);
+            TextView qt=(TextView)qf.findViewById(R.id.quant_title);
+            qt.setText(event.getQuant_names().get(i));
+            EditText qi =(EditText)qf.findViewById(R.id.quant_input);
+            qi.setHint(event.getQuant_units().get(i));
+            qi.setId(i);
+            insert_quant.addView(qf);
+        }
+
     }
 
 }

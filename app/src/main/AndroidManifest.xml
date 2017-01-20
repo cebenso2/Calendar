@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cbcb.chris.calendar">
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -20,14 +21,22 @@
         </activity>
         <activity
             android:name=".EventActivity"
-            android:label="@string/event_add"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="@string/event_add"/>
 
-        <receiver android:name=".NotificationPublisher" />
+        <receiver android:name=".NotificationPublisher"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+
+        </receiver>
 
         <activity
-            android:name=".EditEventActivity"
-            android:label="@string/event_edit" />
+            android:name=".EditEventActivity" />
         <activity
             android:name=".CompletedEvent"
             android:label="@string/event_save_data" >

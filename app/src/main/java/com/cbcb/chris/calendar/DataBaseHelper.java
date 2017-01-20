@@ -20,7 +20,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     // Database Version
     private static final int DATABASE_VERSION = 1;
     // Database Name
-    private static final String DATABASE_NAME = "eventsInfo_v4";
+    private static final String DATABASE_NAME = "eventsInfo_v7";
 
     private static final String TABLE_EVENTS = "events";
 
@@ -44,6 +44,12 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     private static final String KEY_EVENT_ID = "event_id";
     private static final String KEY_UNITS="units";
 
+    private static final String TABLE_QUANT_FIELDS_DATA = "quant_fields_data";
+
+    private static final String KEY_DATA_ID = "data_id";
+    private static final String KEY_FIELD_NUMBER="field_number";
+    private static final String KEY_VALUE="value";
+
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,30 +57,39 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_EVENTS + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_TIME + " Time," + KEY_TYPE +" INTEGER,"+KEY_DATE+" INTEGER,"+KEY_DAYS_OF_WEEK+ " INTEGER,"+ KEY_FREQUENCY+" INTEGER"+")";
-        Log.d("test","create");
-        Log.d("test",CREATE_CONTACTS_TABLE);
-        String CREATE_EVENT_DATA_TABLE = "CREATE TABLE " + TABLE_EVENTS_DATA + "(" + KEY_ID + " INTEGER," + KEY_START_TIME + " TIME," + KEY_END_TIME + " Time," + KEY_Q1 +" INTEGER"+")";
+        String CREATE_EVENT_DATA_TABLE = "CREATE TABLE " + TABLE_EVENTS_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_EVENT_ID +" INTEGER," + KEY_START_TIME + " TIME," + KEY_END_TIME + " Time" +")";
         String CREATE_QUANT_FIELDS_TABLE = "CREATE TABLE " + TABLE_QUANT_FIELDS + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_EVENT_ID + " INTEGER," + KEY_NAME + " TEXT," +KEY_UNITS + " TEXT)";
+        String CREATE_QUANT_FIELDS_DATA_TABLE = "CREATE TABLE " + TABLE_QUANT_FIELDS_DATA + "(" + KEY_DATA_ID + " INTEGER," + KEY_EVENT_ID+ " INTEGER, "+ KEY_FIELD_NUMBER + " INTEGER," + KEY_VALUE + " REAL)";
         db.execSQL(CREATE_CONTACTS_TABLE);
         db.execSQL(CREATE_EVENT_DATA_TABLE);
         db.execSQL(CREATE_QUANT_FIELDS_TABLE);
+        db.execSQL(CREATE_QUANT_FIELDS_DATA_TABLE);
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUANT_FIELDS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUANT_FIELDS_DATA);
         onCreate(db);
         Log.d("test","upgrade");
     }
 
-    public void addEventData(int id, Time start, Time end, int q1) {
+    public void addEventData(int id, Time start, Time end, List<Double> q_values) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, id);
+        values.put(KEY_EVENT_ID, id);
         values.put(KEY_START_TIME , start.toString());
         values.put(KEY_END_TIME , end.toString());
-        values.put(KEY_Q1,q1);
-        db.insert(TABLE_EVENTS_DATA, null, values);
+        long data_id=db.insert(TABLE_EVENTS_DATA, null, values);
+        for(int i=0;i<q_values.size();i++){
+            values=new ContentValues();
+            values.put(KEY_DATA_ID,data_id);
+            values.put(KEY_FIELD_NUMBER,i);
+            values.put(KEY_VALUE,q_values.get(i));
+            values.put(KEY_EVENT_ID,id);
+            db.insert(TABLE_QUANT_FIELDS_DATA,null,values);
+        }
         db.close();
     }
     // Adding new shop
@@ -174,7 +189,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 // return contact list
         return eventList;
     }
-    public void showAllEventData() {
+    public void showAllEvents() {
 
         List<Event> events= getAllEvents();
         for( Event e: events){
@@ -206,10 +221,39 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_EVENTS, KEY_ID + " = ?",
                 new String[] { String.valueOf(event.getId()) });
-        db.delete(TABLE_QUANT_FIELDS, KEY_EVENT_ID + " = ?",new String[] { String.valueOf(event.getId()) });
         db.delete(TABLE_EVENTS_DATA, KEY_ID + " = ?",
                 new String[] { String.valueOf(event.getId()) });
+        db.delete(TABLE_QUANT_FIELDS, KEY_EVENT_ID + " = ?",new String[] { String.valueOf(event.getId()) });
+        db.delete(TABLE_QUANT_FIELDS_DATA, KEY_EVENT_ID + " = ?",new String[] { String.valueOf(event.getId()) });
         db.close();
+    }
+
+    public void showEventCompletionData(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor=db.rawQuery("SELECT * FROM " + TABLE_EVENTS_DATA + " WHERE "+ KEY_EVENT_ID+ " = "+id,null);
+        if (cursor.moveToFirst()) {
+            do {
+                EventData ed=new EventData();
+                ed.setEvent_id(id);
+                ed.setData_id(Integer.valueOf(cursor.getString(0)));
+                Log.d("Start",cursor.getString(2));
+                Log.d("End",cursor.getString(3));
+                ed.setStart(Time.valueOf(cursor.getString(2)));
+                ed.setEnd(Time.valueOf(cursor.getString(3)));
+                Cursor cursor1=db.rawQuery("SELECT * FROM " +TABLE_QUANT_FIELDS_DATA + " WHERE " + KEY_DATA_ID + " = " +ed.getData_id() + " ORDER BY " +KEY_FIELD_NUMBER,null);
+                ArrayList<Double> vs=new ArrayList<Double>();
+                if (cursor1.moveToFirst()) {
+                    do {
+                        vs.add(Double.valueOf(cursor1.getString(3)));
+                    }
+                    while (cursor1.moveToNext());
+                    ed.setValues(vs);
+                }
+                Log.d("Data: ",ed.toString());
+            }
+            while (cursor.moveToNext());
+        }
+
     }
 
 }
