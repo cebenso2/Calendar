@@ -147,7 +147,7 @@ public class EventActivity extends AppCompatActivity {
         Event e=new Event(1,event_name,event_time,type,date,days_of_week,freq+1,quant_names,quant_units);
         e.setId((int)db.addEvent(e));
         db.close();
-        setEventAlarm(e);
+        //setEventAlarm(e);
         this.finish();
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

@@ -36,11 +36,9 @@ public class NotificationPublisher extends BroadcastReceiver {
         if (Intent.ACTION_BOOT_COMPLETED.equalsIgnoreCase(intent.getAction())) {
             DataBaseHelper db= new DataBaseHelper(context);
             List<Event> events= db.getAllEvents();
-            Log.d("Size1234", String.valueOf(events.size()));
             for(Event e: events){
                 setEventAlarm(e,context);
             }
-            Log.d("hello1234","reboot");
         }
         else {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

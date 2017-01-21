@@ -25,9 +25,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/event_add"/>
 
-        <receiver android:name=".NotificationPublisher"
-            android:enabled="true"
-            android:exported="true">
+        <receiver android:name=".NotificationPublisher">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
