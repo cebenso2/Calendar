@@ -256,4 +256,35 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     }
 
+    public ArrayList<EventData> getAllEventData(int id){
+        ArrayList<EventData> result=new ArrayList<EventData>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor=db.rawQuery("SELECT * FROM " + TABLE_EVENTS_DATA + " WHERE "+ KEY_EVENT_ID+ " = "+id,null);
+        if (cursor.moveToFirst()) {
+            do {
+                EventData ed=new EventData();
+                ed.setEvent_id(id);
+                ed.setData_id(Integer.valueOf(cursor.getString(0)));
+                Log.d("Start",cursor.getString(2));
+                Log.d("End",cursor.getString(3));
+                ed.setStart(Time.valueOf(cursor.getString(2)));
+                ed.setEnd(Time.valueOf(cursor.getString(3)));
+                Cursor cursor1=db.rawQuery("SELECT * FROM " +TABLE_QUANT_FIELDS_DATA + " WHERE " + KEY_DATA_ID + " = " +ed.getData_id() + " ORDER BY " +KEY_FIELD_NUMBER,null);
+                ArrayList<Double> vs=new ArrayList<Double>();
+                if (cursor1.moveToFirst()) {
+                    do {
+                        vs.add(Double.valueOf(cursor1.getString(3)));
+                    }
+                    while (cursor1.moveToNext());
+                    ed.setValues(vs);
+                }
+                Log.d("Data: ",ed.toString());
+                result.add(ed);
+            }
+            while (cursor.moveToNext());
+        }
+        return result;
+
+    }
+
 }

@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Event e=(Event)parent.getAdapter().getItem(position);
-                editEvent(view,e);
+                viewEventData(view,e);
             }
         });
         mainListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -76,6 +76,11 @@ public class MainActivity extends AppCompatActivity{
     }
     public void editEvent(View view, Event e) {
         Intent intent = new Intent(this, EditEventActivity.class);
+        intent.putExtra("ID",e.getId());
+        startActivity(intent);
+    }
+    public void viewEventData(View view, Event e) {
+        Intent intent = new Intent(this, DataActivity.class);
         intent.putExtra("ID",e.getId());
         startActivity(intent);
     }

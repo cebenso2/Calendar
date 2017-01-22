@@ -92,38 +92,13 @@ public class EventActivity extends AppCompatActivity {
                 minutes=minute;
                 hours=hourOfDay;
                 TextView tc=(TextView)findViewById(R.id.textClock);
-                tc.setText(createClockText(minute,hourOfDay));
+                tc.setText(CalendarUtil.createClockText(minute,hourOfDay));
             }
         };
         TimePickerDialog l=new TimePickerDialog(EventActivity.this,R.style.Theme_Dialog , t, hours, minutes, false);
         l.show();
     }
-    private String createClockText(int minute,int hourOfDay){
-        String hour="12";
-        String min="00";
-        String meridiem="AM";
-        if(minute>=10){
-            min = String.valueOf(minute);
-        }
-        else {
-            min = "0" + String.valueOf(minute);
-        }
 
-        if(hourOfDay>12) {
-            hourOfDay -= 12;
-            meridiem="PM";
-        }
-        if(hourOfDay==12){
-            meridiem="PM";
-        }
-        hour=String.valueOf(hourOfDay);
-        if(hourOfDay==0){
-            hour="12";
-            meridiem="AM";
-        }
-        return hour+":"+min+" "+meridiem;
-
-    }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void addEventToDB(View view){
         EditText name=(EditText)findViewById(R.id.EventName);
@@ -147,7 +122,7 @@ public class EventActivity extends AppCompatActivity {
         Event e=new Event(1,event_name,event_time,type,date,days_of_week,freq+1,quant_names,quant_units);
         e.setId((int)db.addEvent(e));
         db.close();
-        //setEventAlarm(e);
+        setEventAlarm(e);
         this.finish();
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

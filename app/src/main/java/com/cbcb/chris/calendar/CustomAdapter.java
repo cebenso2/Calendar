@@ -45,36 +45,9 @@ public class CustomAdapter extends ArrayAdapter<Event>{
         //set price and rental attributes
         name.setText(event.getName());
         type.setText(type_dict[event.getType()]);
-        time.setText(createClockText(event.getTime().getMinutes(),event.getTime().getHours()));
+        time.setText(CalendarUtil.createClockText(event.getTime().getMinutes(),event.getTime().getHours()));
 
         return view;
     }
-    private String createClockText(int minute,int hourOfDay){
-        String hour="12";
-        String min="00";
-        String meridiem="AM";
-        if(minute>=10){
-            min = String.valueOf(minute);
-        }
-        else {
-            min = "0" + String.valueOf(minute);
-        }
-
-        if(hourOfDay>12) {
-            hourOfDay -= 12;
-            meridiem="PM";
-        }
-        if(hourOfDay==12){
-            meridiem="PM";
-        }
-        hour=String.valueOf(hourOfDay);
-        if(hourOfDay==0){
-            hour="12";
-            meridiem="AM";
-        }
-        return hour+":"+min+" "+meridiem;
-
-    }
-
 
 }
